@@ -13,6 +13,4 @@ export const loginSchema = userSchema.pick({
   password: true,
 })
 
-export const tokenSchema = z.object({
-  token: z.string().min(15)
-})
+export const tokenSchema = z.string().min(15)

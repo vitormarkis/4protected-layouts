@@ -7,6 +7,11 @@ export type TToken = z.infer<typeof tokenSchema>
 
 export interface IAuthentication {
   user: IUser | null
-  login: (userdata: ILogin) => void
+  login: (userdata: ILogin) => Promise<boolean>
   logout: () => void
+}
+
+export interface ResponseLogin {
+  user: Omit<IUser, 'password'>
+  token: TToken
 }

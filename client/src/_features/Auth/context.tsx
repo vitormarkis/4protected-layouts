@@ -1,18 +1,25 @@
-import { createContext, useContext, useMemo, useState } from "react"
-import { api } from "../../services/axios"
+import { createContext, useContext, useState } from "react"
+import { userSchema } from "./schemas"
 import { IAuthentication, ILogin, IUser } from "./types"
+import { useApi } from "./useApi"
 
 export const AuthContext = createContext<IAuthentication>({} as IAuthentication)
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<IUser | null>(null)
+  const api = useApi()
 
   async function login(userdata: ILogin) {
     try {
-      const responseUser = await api.post<IUser, IUser, ILogin>("/login", userdata)
-      setUser(responseUser)
+      const { token, user: responseUser } = await api.login(userdata)
+      const parsedUser = userSchema.parse(responseUser)
+      setUser(parsedUser)
+      return true
     } catch (error) {
+      console.log(error)
+      await api.logout()
       setUser(null)
+      return false
     }
   }
 
@@ -20,14 +27,20 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     setUser(null)
   }
 
-  const value: IAuthentication = useMemo(
-    () => ({
-      user,
-      login,
-      logout,
-    }),
-    [user]
-  )
+  // const value = useMemo(
+  //   () => ({
+  //     user,
+  //     login,
+  //     logout,
+  //   }),
+  //   [user]
+  // )
+
+  const value = {
+    user,
+    login,
+    logout,
+  }
 
   return (
     <AuthContext.Provider
