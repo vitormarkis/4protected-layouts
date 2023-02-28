@@ -2,8 +2,11 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import "./index.css"
-import Profile from "./pages/Profile"
 import RootLayout from "./Layouts/Root"
+import Login from "./pages/Login"
+import Profile from "./pages/Profile"
+import AuthProvider from "./_features/Auth/context"
+import PrivilegedPage from "./_features/Auth/PrivilegedPage"
 
 const router = createBrowserRouter([
   {
@@ -16,7 +19,15 @@ const router = createBrowserRouter([
       },
       {
         path: "/profile",
-        element: <Profile />,
+        element: (
+          <PrivilegedPage>
+            <Profile />
+          </PrivilegedPage>
+        ),
+      },
+      {
+        path: "/login",
+        element: <Login />,
       },
     ],
   },
@@ -24,6 +35,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>
 )
